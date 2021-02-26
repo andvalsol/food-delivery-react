@@ -132,7 +132,11 @@ const HomeScreen = (props) => {
         const renderItem = (item) => {
             return (
                 <TouchableOpacity
-                    style={styles.singleRestaurantContainer}>
+                    style={styles.singleRestaurantContainer}
+                    onPress={() => props.navigate("Restaurant", {
+                        item,
+                        initialLocation
+                    })}>
                     <View style={{marginBottom: SIZES.padding}}>
                         <Image
                             source={item.photo}
@@ -155,7 +159,7 @@ const HomeScreen = (props) => {
                             style={styles.singleRestaurantMealContainer}>
                             {item.categories.map((category) => singleCategory(category))}
                             {
-                                [1, 2, 3].map((priceRating) => priceRating(priceRating, item.priceRating))
+                                [1, 2, 3].map((rating) => priceRating(rating, item.priceRating))
                             }
                         </View>
                     </View>
