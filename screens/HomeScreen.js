@@ -191,18 +191,8 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.lightGray4
 
     },
-    shadow: {
-        shadowColor: "#000000", // For iOS
-        shadowOffset: { // For iOS
-            width: 3,
-            height: 3
-        },
-        shadowOpacity: 0.1, // For iOS
-        shadowRadius: 3, // For iOS
-        elevation: 1 // For Android
-    },
     header: {
-        flowDirection: "row",
+        flexDirection: "row",
         height: 50
     },
     headerOpacity: {
@@ -240,7 +230,14 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         marginRight: SIZES.padding,
-        ...styles.shadow
+        shadowColor: "#000000", // For iOS
+        shadowOffset: { // For iOS
+            width: 3,
+            height: 3
+        },
+        shadowOpacity: 0.1, // For iOS
+        shadowRadius: 3, // For iOS
+        elevation: 1 // For Android
     },
     singleHorizontalBackground: {
         width: 50,
@@ -279,7 +276,14 @@ const styles = StyleSheet.create({
         borderBottomLeftRadius: SIZES.radius,
         alignItems: "center",
         justifyContent: "center",
-        ...styles.shadow
+        shadowColor: "#000000", // For iOS
+        shadowOffset: { // For iOS
+            width: 3,
+            height: 3
+        },
+        shadowOpacity: 0.1, // For iOS
+        shadowRadius: 3, // For iOS
+        elevation: 1 // For Android
     },
     singleRestaurantSubheaderText: {
         ...FONTS.h4

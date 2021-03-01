@@ -62,16 +62,14 @@ const RestaurantScreen = (props) => {
                     resizeMode="cover"/>
                 <View style={styles.menuItemQuantityContainer}>
                     <TouchableOpacity
-                        style={styles.menuItemQuantityLeftButtonBackground}
-                        onPress={}>
+                        style={styles.menuItemQuantityLeftButtonBackground}>
                         <Text style={styles.menuItemQuantityText}>-</Text>
                     </TouchableOpacity>
                     <View style={styles.menuItemQuantityBackground}>
                         <Text style={styles.menuItemQuantityText}>5</Text>
                     </View>
                     <TouchableOpacity
-                        style={styles.menuItemQuantityRightButtonBackground}
-                        onPress={}>
+                        style={styles.menuItemQuantityRightButtonBackground}>
                         <Text style={styles.menuItemQuantityText}>+</Text>
                     </TouchableOpacity>
                 </View>
@@ -171,6 +169,14 @@ const RestaurantScreen = (props) => {
         <View>
             {renderDots()}
             <View style={styles.orderSectionContainer}>
+                <View style={styles.orderSectionHeader1}>
+                    <Text style={styles.orderSectionHeaderText}>
+                        {} items in cart
+                    </Text>
+                    <Text style={styles.orderSectionHeaderText}>
+                        $45
+                    </Text>
+                </View>
                 <View>
 
                 </View>
@@ -239,19 +245,19 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         flexDirection: "row"
     },
-    menuItemQuantityButtonBackground: {
+    menuItemQuantityLeftButtonBackground: {
         width: 50,
         backgroundColor: COLORS.white,
         alignItems: "center",
         justifyContent: "center",
-    },
-    menuItemQuantityLeftButtonBackground: {
-        ...styles.menuItemQuantityButtonBackground,
         borderTopLeftRadius: 25,
         borderBottomLeftRadius: 25
     },
     menuItemQuantityRightButtonBackground: {
-        ...styles.menuItemQuantityButtonBackground,
+        width: 50,
+        backgroundColor: COLORS.white,
+        alignItems: "center",
+        justifyContent: "center",
         borderTopRightRadius: 25,
         borderBottomRightRadius: 25
     },
@@ -310,6 +316,17 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 40
     },
     orderSectionHeader1: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        paddingVertical: SIZES.padding * 2,
+        paddingHorizontal: SIZES.padding * 3,
+        borderBottomColor: COLORS.lightGray2,
+        borderBottomWidth: 1
+    },
+    orderSectionHeaderText: {
+        ...FONTS.h3
+    },
+    orderSectionHeader2: {
         flexDirection: "row",
         justifyContent: "space-between",
         paddingVertical: SIZES.padding * 2
