@@ -133,7 +133,7 @@ const HomeScreen = (props) => {
             return (
                 <TouchableOpacity
                     style={styles.singleRestaurantContainer}
-                    onPress={() => props.navigate("Restaurant", {
+                    onPress={() => props.navigation.navigate("Restaurant", {
                         item,
                         initialLocation
                     })}>
