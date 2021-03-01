@@ -1,11 +1,12 @@
-import React, {useState, useEffect} from "react"
-import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, Animated} from "react-native"
-import {icons, COLORS, SIZES, FONTS} from "../constants"
+import React, {useEffect, useState} from "react"
+import {Animated, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from "react-native"
+import {COLORS, FONTS, icons, SIZES} from "../constants"
 
 
 const RestaurantScreen = (props) => {
     const [restaurant, setRestaurant] = useState(null) // no selected restaurant at first
     const [currentLocation, setCurrentLocation] = useState(null)
+    const [orderItems, setOrderItems] = useState([])
 
     const scrollX = new Animated.Value(0)
 
@@ -15,6 +16,62 @@ const RestaurantScreen = (props) => {
         setRestaurant(item) // We need to add these lines since if this screen is created previously, it will read the initial values and not the most recent ones
         setCurrentLocation(initialLocation)
     })
+
+    const getOrderById = (menuId) => {
+        const orderItems = orderItems.filter((item) => item.menuId === menuId)
+
+        if (orderItems.length > 0) {
+            return orderItems[0].qty
+        }
+
+        return 0
+    }
+
+    const sumOrder = () => {
+        const total = orderItems.reduce((currentValue, item) => currentValue + (item.total), 0)
+
+        return total.toFixed(2)
+    }
+
+    const getBasketItemCount = () => {
+        let itemCount = orderItems.reduce((currentCount, item) => currentCount + (item.qty || 0), 0)
+
+        return itemCount
+    }
+
+    const editOrder = (action, menuId, price) => {
+        const items = orderItems.filter((item) => item.menuId === menuId)
+
+        if (action === "+") {
+            // Increase the order amount
+            if (items.length > 0) {
+                // The user has already added this item
+                const item = items[0]
+                item.qty = item.qty + 1
+                item.total = item.price * item.qty
+            } else {
+                // It´s a new item that the user wants to add
+                const item = {
+                    menuId: menuId,
+                    qty: 1,
+                    price: price,
+                    total: price // === to price * 1 since we only have 1 item
+                }
+
+                setOrderItems((orderItems) => orderItems.push(item))
+            }
+        } else if (action === "-") {
+            // Decrease the order amount
+            if (items.length > 0) {
+                // Get the first item (there should only be 1 item)
+                const item = items[0]
+                if (item.qty > 0) {
+                    item.qty = item.qty - 1
+                    item.total = item.price * item.qty
+                }
+            }
+        }
+    }
 
     const renderHeader = (restaurant) => (
         <View
@@ -62,13 +119,15 @@ const RestaurantScreen = (props) => {
                     resizeMode="cover"/>
                 <View style={styles.menuItemQuantityContainer}>
                     <TouchableOpacity
+                        onPress={editOrder("-", item.menuId, item.price)}
                         style={styles.menuItemQuantityLeftButtonBackground}>
                         <Text style={styles.menuItemQuantityText}>-</Text>
                     </TouchableOpacity>
                     <View style={styles.menuItemQuantityBackground}>
-                        <Text style={styles.menuItemQuantityText}>5</Text>
+                        <Text style={styles.menuItemQuantityText}>{getOrderById(item.menuId)}</Text>
                     </View>
                     <TouchableOpacity
+                        onPress={editOrder("+", item.menuId, item.price)}
                         style={styles.menuItemQuantityRightButtonBackground}>
                         <Text style={styles.menuItemQuantityText}>+</Text>
                     </TouchableOpacity>
@@ -134,12 +193,12 @@ const RestaurantScreen = (props) => {
 
                         const dotSize = dotPosition.interpolate({
                             inputRange: [index - 1, index, index + 1],
-                            outputRange:[SIZES.base * 0.8, 10, SIZES.base * 0.8],
+                            outputRange: [SIZES.base * 0.8, 10, SIZES.base * 0.8],
                             extrapolate: "clamp"
                         })
 
                         const dotColor = dotPosition.interpolate({
-                            inputRange:[index - 1, index, index + 1],
+                            inputRange: [index - 1, index, index + 1],
                             outputRange: [COLORS.darkgray, COLORS.primary, COLORS.darkgray],
                             extrapolate: "clamp"
                         })
@@ -171,14 +230,43 @@ const RestaurantScreen = (props) => {
             <View style={styles.orderSectionContainer}>
                 <View style={styles.orderSectionHeader1}>
                     <Text style={styles.orderSectionHeaderText}>
-                        {} items in cart
+                        {getBasketItemCount()} items in cart
                     </Text>
                     <Text style={styles.orderSectionHeaderText}>
-                        $45
+                        {sumOrder()}
                     </Text>
                 </View>
-                <View>
-
+                <View style={styles.orderSectionHeader2}>
+                    <View style={styles.orderSectionHeader2Background}>
+                        <Image
+                            resizeMode="contain"
+                            source={icons.pin}
+                            style={styles.orderSectionHeader2Image}/>
+                        <Text style={styles.orderSectionHeader2Text}>
+                            Location
+                        </Text>
+                    </View>
+                    <View style={styles.orderSectionHeader2}>
+                        <Image
+                            source={icons.master_card}
+                            resizeMode="contain"
+                            style={styles.orderSectionHeader2Image}/>
+                        <Text style={styles.orderSectionHeader2Text}>
+                            8888
+                        </Text>
+                    </View>
+                </View>
+                <View style={styles.orderSectionButtonContainer}>
+                    <TouchableOpacity
+                        onPress={() => props.navigation.navigate("OrderDeliveryScreen", {
+                            restaurant: restaurant,
+                            currentLocation: currentLocation
+                        })}
+                        style={styles.orderSectionButton}>
+                        <Text style={styles.orderSectionButtonText}>
+                            Order
+                        </Text>
+                    </TouchableOpacity>
                 </View>
             </View>
         </View>
@@ -298,7 +386,7 @@ const styles = StyleSheet.create({
         color: COLORS.darkgray
     },
     dotsContainer: {
-      height: 30
+        height: 30
     },
     dotsBackground: {
         flexDirection: "row",
@@ -308,7 +396,7 @@ const styles = StyleSheet.create({
     },
     dots: {
         borderRadius: SIZES.borderRadius,
-        marginHorizontal:  6
+        marginHorizontal: 6
     },
     orderSectionContainer: {
         backgroundColor: COLORS.white,
@@ -329,7 +417,39 @@ const styles = StyleSheet.create({
     orderSectionHeader2: {
         flexDirection: "row",
         justifyContent: "space-between",
-        paddingVertical: SIZES.padding * 2
+        paddingVertical: SIZES.padding * 2,
+        paddingHorizontal: SIZES.padding * 3
+    },
+    orderSectionHeader2Background: {
+        flexDirection: "row"
+    },
+    orderSectionHeader2Image: {
+        width: 20,
+        height: 20,
+        tintColor: COLORS.darkgray
+    },
+    orderSectionHeader2Text: {
+        marginLeft: SIZES.padding,
+        ...FONTS.h4
+    },
+    orderSectionButtonContainer: {
+        padding: SIZES.padding * 2,
+        alignItems: "center",
+        justifyContent: "center"
+    },
+    orderSectionButton: {
+        width: SIZES.width * 0.9,
+        padding: SIZES.padding,
+        backgroundColor: COLORS.primary,
+        alignItems: "center",
+        borderRadius: SIZES.radius
+    },
+    orderSectionButtonText: {
+        color: COLORS.white,
+        ...FONTS.h2
+    },
+    emptySpaceFill: { // For devices like iPhoneX
+
     }
 })
 
